@@ -1,0 +1,15 @@
+.correcto {
+    color: #32D296 !important;
+}
+
+.completada {
+    background: #32D296 !important;
+}
+
+.agendada {
+    background: #FAA05A !important;
+}
+
+.cancelada {
+    background: #F0506E !important;
+}
