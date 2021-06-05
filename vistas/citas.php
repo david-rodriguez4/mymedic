@@ -26,10 +26,16 @@ if (!ControlSesion::sesionIniciada()) {
 
 if ($_SESSION['estado'] == 'IPS') {
     if (isset($_POST['agendar'])) {
-        if ($_POST['paciente'] != 0 && $_POST['doctor'] != 0) {
-            Conexion::abrirConexion();
+        if ((strtotime('8:00') < strtotime($_POST['hora'])) && (strtotime($_POST['hora']) < strtotime('17:00'))) {
+            $hora = true;
+        } else {
+            $hora = false;
+        }
+        Conexion::abrirConexion();
+        $fecha_atencion = $_POST['fecha'] . ' ' . $_POST['hora'] . ':00';
+        $cita_existe = RepositorioCita::citaExiste(Conexion::obtenerConexion(), $_POST['paciente'], $_POST['doctor'], $fecha_atencion);
+        if ($_POST['paciente'] != 0 && $_POST['doctor'] != 0 && !$cita_existe && $hora) {
             $id_cita = md5(password_hash(rand(0, 100000), PASSWORD_DEFAULT));
-            $fecha_atencion = $_POST['fecha'] . ' ' . $_POST['hora'] . ':00';
             $cita = new Cita($id_cita, $_POST['paciente'], $_POST['doctor'], '', '', $fecha_atencion, '');
             RepositorioCita::insertarCita(Conexion::obtenerConexion(), $cita);
             ?>
@@ -81,6 +87,12 @@ if ($_SESSION['estado'] == 'IPS') {
             $mail->addAddress($paciente->getEmail());
             $mail->send();
             $mail->smtpClose();
+        } else {
+            ?>
+            <script>
+                alert("Error al agendar la cita.");
+            </script>
+            <?php
         }
     }
 
@@ -140,7 +152,7 @@ if ($_SESSION['estado'] == 'IPS') {
                 </label>
                 <br><br>
                 <label>Fecha <span style="color: red">*</span>
-                    <input name="fecha" type="date" class="uk-input" required>
+                    <input name="fecha" type="date" class="uk-input" min="<?php echo date("Y-m-d") ?>" required>
                 </label>
                 <br><br>
                 <label>Hora <span style="color: red">*</span>
@@ -167,7 +179,7 @@ if ($_SESSION['estado'] == 'IPS') {
                 <h3 class="uk-card-title uk-margin-remove-bottom uk-align-left"><b>MIS CITAS</b></h3>
             </div>
             <div class="uk-card-body">
-                <table class="uk-table uk-table-hover uk-table-divider uk-table-small">
+                <table class="uk-table uk-table-hover uk-table-divider">
                     <thead>
                     <tr>
                         <th><b>Paciente</b></th>
@@ -197,7 +209,7 @@ if ($_SESSION['estado'] == 'IPS') {
                 <h3 class="uk-card-title uk-margin-remove-bottom uk-align-left"><b>CITAS</b></h3>
             </div>
             <div class="uk-card-body">
-                <table class="uk-table uk-table-hover uk-table-divider uk-table-small">
+                <table class="uk-table uk-table-hover uk-table-divider">
                     <thead>
                     <tr>
                         <th><b>Paciente</b></th>

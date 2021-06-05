@@ -65,7 +65,7 @@ class RepositorioPaciente
         $pacientes = [];
         if (isset($conexion)) {
             try {
-                $sql = "SELECT * FROM pacientes";
+                $sql = "SELECT * FROM pacientes WHERE estado = 0";
                 $setencia = $conexion->prepare($sql);
                 $setencia->execute();
                 $resultado = $setencia->fetchAll();
@@ -106,6 +106,11 @@ class RepositorioPaciente
         if (isset($conexion)) {
             try {
                 $sql = "UPDATE pacientes SET estado = 1 WHERE id = :id";
+                $setencia = $conexion->prepare($sql);
+                $setencia->bindParam(':id', $id, PDO::PARAM_STR);
+                $setencia->execute();
+
+                $sql = "UPDATE citas SET estado = 2 WHERE id_paciente = :id";
                 $setencia = $conexion->prepare($sql);
                 $setencia->bindParam(':id', $id, PDO::PARAM_STR);
                 $setencia->execute();

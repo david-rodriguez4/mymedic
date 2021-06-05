@@ -5,6 +5,11 @@ include_once 'app/Paciente.inc.php';
 include_once 'app/Conexion.inc.php';
 include_once 'app/ControlSesion.inc.php';
 
+if ($_SESSION['estado'] != 'IPS') {
+    header('Location: ' . RUTA_CITAS, true, 301);
+    exit();
+}
+
 if (ControlSesion::sesionIniciada() && $_SESSION['estado'] == 'IPS') {
     $existe_pac = false;
     $coincide_pac = true;

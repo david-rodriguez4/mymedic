@@ -67,7 +67,7 @@ class RepositorioDoctor
         $doctores = [];
         if (isset($conexion)) {
             try {
-                $sql = "SELECT * FROM doctores";
+                $sql = "SELECT * FROM doctores WHERE estado = 0";
                 $setencia = $conexion->prepare($sql);
                 $setencia->execute();
                 $resultado = $setencia->fetchAll();
@@ -108,6 +108,11 @@ class RepositorioDoctor
         if (isset($conexion)) {
             try {
                 $sql = "UPDATE doctores SET estado = 1 WHERE id = :id";
+                $setencia = $conexion->prepare($sql);
+                $setencia->bindParam(':id', $id, PDO::PARAM_STR);
+                $setencia->execute();
+
+                $sql = "UPDATE citas SET estado = 2 WHERE id_doctor = :id";
                 $setencia = $conexion->prepare($sql);
                 $setencia->bindParam(':id', $id, PDO::PARAM_STR);
                 $setencia->execute();

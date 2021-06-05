@@ -150,4 +150,26 @@ class RepositorioCita
         }
         return true;
     }
+
+    public static function citaExiste($conexion, $id_paciente, $id_doctor, $fecha_atencion)
+    {
+        $cita = false;
+        if (isset($conexion)) {
+            try {
+                $sql = "SELECT * FROM citas WHERE id_paciente = :id_paciente AND id_doctor = :id_doctor AND fecha_atencion = :fecha_atencion";
+                $setencia = $conexion->prepare($sql);
+                $setencia->bindParam(':id_paciente', $id_paciente, PDO::PARAM_STR);
+                $setencia->bindParam(':id_doctor', $id_doctor, PDO::PARAM_STR);
+                $setencia->bindParam(':fecha_atencion', $fecha_atencion, PDO::PARAM_STR);
+                $setencia->execute();
+                $resultado = $setencia->fetch();
+                if (!empty($resultado)) {
+                    $cita = true;
+                }
+            } catch (PDOException $ex) {
+                print "ERROR" . $ex->getMessage();
+            }
+        }
+        return $cita;
+    }
 }
